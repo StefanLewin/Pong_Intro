@@ -1909,7 +1909,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 474669633}
         m_TargetAssemblyTypeName: GameManager, Assembly-CSharp
-        m_MethodName: RightScores
+        m_MethodName: LeftScores
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -2260,7 +2260,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 474669633}
         m_TargetAssemblyTypeName: GameManager, Assembly-CSharp
-        m_MethodName: LeftScores
+        m_MethodName: RightScores
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

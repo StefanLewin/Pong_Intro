@@ -19,11 +19,11 @@ public class PlayerRacket : Racket
 
     private void PlayerOneControls()
     {
-        if (Input.GetKey(KeyCode.UpArrow))
+        if (Input.GetKey(KeyCode.W))
         {
             _direction = Vector2.up;
         }
-        else if (Input.GetKey(KeyCode.DownArrow))
+        else if (Input.GetKey(KeyCode.S))
         {
             _direction = Vector2.down;
         }
@@ -35,11 +35,11 @@ public class PlayerRacket : Racket
 
     private void PlayerTwoControls()
     {
-        if (Input.GetKey(KeyCode.W))
+        if (Input.GetKey(KeyCode.UpArrow))
         {
             _direction = Vector2.up;
         }
-        else if (Input.GetKey(KeyCode.S))
+        else if (Input.GetKey(KeyCode.DownArrow))
         {
             _direction = Vector2.down;
         }
