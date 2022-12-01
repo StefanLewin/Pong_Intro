@@ -1,3 +1,6 @@
+
+using System.Collections;
+using Unity.VisualScripting;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
@@ -6,17 +9,19 @@ public class GameManager : MonoBehaviour
 {
     public GameObject AI_Player, Player, Ball, PlayerBall;
     public Text leftScoreText, rightScoreText;
-    public GameObject LineContainer, PlayerContainer, Camera, RightWall;
+    public GameObject LineContainer, PlayerContainer, BoundaryContainer, Camera, RightWall;
 
     private Ball ball;
     private PlayerBall playerBall;
     private Racket leftRacket, rightRacket;
+    private SpriteRenderer leftRacketSprite, rightRacketSprite;
     private int _playerScore, _computerScore, _playerCount;
     private bool isExploded;
     
 
     private void Start()
     {
+        DeactivateLineCollision();
         Instantiate(Ball, new Vector3(0, 0, 0), Quaternion.identity, PlayerContainer.transform);
         PlayerContainer.transform.GetChild(0).gameObject.name = "Ball";
         ball = PlayerContainer.transform.Find("Ball").gameObject.GetComponent<Ball>();
@@ -32,22 +37,32 @@ public class GameManager : MonoBehaviour
         if (Input.GetKey(KeyCode.Z)) 
         {
             if (!isExploded)
-            {
-                RightWall.transform.position = new Vector3(90, 0, 0);
+            {                
+                StartCoroutine(Fade(leftRacketSprite));
+                StartCoroutine(Fade(rightRacketSprite));
+
+                leftRacket.FreeRacket();
+                rightRacket.FreeRacket();
                 Destroy(PlayerContainer.transform.Find("Ball").gameObject);
                 InitPlayerBall();
+
+                for (int i = 0; i <= 3; i++)
+                {
+                    Physics2D.IgnoreCollision(leftRacket.getCollider(), BoundaryContainer.transform.GetChild(i).GetComponent<Collider2D>());
+                    Physics2D.IgnoreCollision(rightRacket.getCollider(), BoundaryContainer.transform.GetChild(i).GetComponent<Collider2D>());
+                }
+
+                ExplodeLines();
+
+                RightWall.transform.position = new Vector3(90, 0, 0);
+                
+                
                 
             }
             
             isExploded = true;
 
-            leftRacket.DeactivateComputer();
-            leftRacket.FreeRacket();
 
-            rightRacket.DeactivateComputer();
-            rightRacket.FreeRacket();
-
-            ExplodeLines();
 
         } 
         else if (Input.GetKey(KeyCode.Alpha1) && _playerCount == 0)
@@ -77,6 +92,24 @@ public class GameManager : MonoBehaviour
         //Debug.Log(string.Format("Computer hat getroffen: {0}", _computerScore));
     }
 
+    IEnumerator Fade(SpriteRenderer sprite)
+    {
+        if(sprite != null)
+        {
+            Color initialColor = sprite.color;
+            Color targetColor = new Color(initialColor.r, initialColor.g, initialColor.b, 0f);
+
+            float elapsedTime = 0f, fadeDuration = 0.1f;
+
+            while (elapsedTime < fadeDuration)
+            {
+                elapsedTime += Time.deltaTime;
+                sprite.color = Color.Lerp(initialColor, targetColor, elapsedTime / fadeDuration);
+                yield return null;
+            }
+        }
+    }
+
     private void ResetRound()
     {
         if (!isExploded)
@@ -94,13 +127,35 @@ public class GameManager : MonoBehaviour
 
         for (int i = 1; i <= 9 ; i++)
         {
-            x = Random.Range(-15, 15);
-            y = Random.Range(-15, 15);
-            torque = Random.Range(-15, 15);
-            LineContainer.transform.Find(string.Format("Line Segment {0}", i)).GetComponent<Rigidbody2D>().AddForce(new Vector2(x * 10, y * 10));
-            LineContainer.transform.Find(string.Format("Line Segment {0}", i)).GetComponent<Rigidbody2D>().AddTorque(torque);
+            if(LineContainer.transform.Find(string.Format("Line Segment {0}", i)) != null)
+            {
+                x = Random.Range(-50, 50);
+                y = Random.Range(-50, 50);
+                torque = Random.Range(-15, 15);
+                StartCoroutine(Fade(LineContainer.transform.Find(string.Format("Line Segment {0}", i)).GetComponent<SpriteRenderer>()));
+                LineContainer.transform.Find(string.Format("Line Segment {0}", i)).GetComponent<Collider2D>().enabled = true;
+
+                for (int j = 0; j <= 3; j++)
+                {
+                    Physics2D.IgnoreCollision(LineContainer.transform.Find(string.Format("Line Segment {0}", i)).GetComponent<Collider2D>(), BoundaryContainer.transform.GetChild(j).GetComponent<Collider2D>());
+                }
+                
+                LineContainer.transform.Find(string.Format("Line Segment {0}", i)).GetComponent<Rigidbody2D>().AddForce(new Vector2(x * 10, y * 10));
+                LineContainer.transform.Find(string.Format("Line Segment {0}", i)).GetComponent<Rigidbody2D>().AddTorque(torque);
+                LineContainer.transform.Find(string.Format("Line Segment {0}", i)).GetComponent<Rigidbody2D>().gravityScale = 0.5f;
+            }
         }
-        
+    }
+
+    private void DeactivateLineCollision()
+    {
+        for (int i = 1; i <= 9; i++)
+        {
+            if (LineContainer.transform.Find(string.Format("Line Segment {0}", i)) != null)
+            {
+                LineContainer.transform.Find(string.Format("Line Segment {0}", i)).GetComponent<Collider2D>().enabled = false;
+            }
+        }
     }
 
     private void InitComputerPlayer(bool onLeftSide)
@@ -116,11 +171,13 @@ public class GameManager : MonoBehaviour
         {
             PlayerContainer.transform.Find(aiName).GetComponent<ComputerRacket>().SetLeft(true);
             leftRacket = PlayerContainer.transform.Find(aiName).GetComponent<ComputerRacket>();
+            leftRacketSprite = PlayerContainer.transform.Find(aiName).GetComponent<SpriteRenderer>();
         }
         else
         {
             PlayerContainer.transform.Find(aiName).GetComponent<ComputerRacket>().SetLeft(false);
             rightRacket = PlayerContainer.transform.Find(aiName).GetComponent<ComputerRacket>();
+            rightRacketSprite = PlayerContainer.transform.Find(aiName).GetComponent<SpriteRenderer>();
         }
     }
 
@@ -155,9 +212,15 @@ public class GameManager : MonoBehaviour
         PlayerContainer.transform.GetChild(PlayerContainer.transform.childCount - 1).gameObject.name = "PlayerBall";
         playerBall = PlayerContainer.transform.Find("PlayerBall").gameObject.GetComponent<PlayerBall>();
 
-        ActivateCameraFollow();
+        Physics2D.IgnoreCollision(playerBall.GetComponent<Collider2D>(), leftRacket.getCollider());
+        Physics2D.IgnoreCollision(playerBall.GetComponent<Collider2D>(), rightRacket.getCollider());
 
-        
+        for (int i = 1; i <= 9; i++)
+        {
+            Physics2D.IgnoreCollision(playerBall.GetComponent<Collider2D>(), LineContainer.transform.Find(string.Format("Line Segment {0}", i)).GetComponent<Collider2D>());
+        }
+
+        ActivateCameraFollow();        
     }
 
     private void ActivateCameraFollow()

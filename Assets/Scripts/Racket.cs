@@ -23,15 +23,15 @@ public class Racket : MonoBehaviour
 
     public void FreeRacket()
     {
+        aiActive = false;
         _rigidbody.constraints = RigidbodyConstraints2D.None;
         _rigidbody.gravityScale = 4.0f;
-        _collider.enabled = false;
         _rigidbody.AddForce(new Vector2(10, 10));
         _rigidbody.AddTorque(5);
     }
 
-    public void DeactivateComputer()
+    public Collider2D getCollider()
     {
-        aiActive = false;
+        return _collider;
     }
 }
