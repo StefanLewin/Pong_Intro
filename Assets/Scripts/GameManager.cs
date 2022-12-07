@@ -4,6 +4,7 @@ using Unity.VisualScripting;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
+using static UnityEngine.GraphicsBuffer;
 
 public class GameManager : MonoBehaviour
 {
@@ -99,7 +100,7 @@ public class GameManager : MonoBehaviour
             Color initialColor = sprite.color;
             Color targetColor = new Color(initialColor.r, initialColor.g, initialColor.b, 0f);
 
-            float elapsedTime = 0f, fadeDuration = 0.1f;
+            float elapsedTime = 0f, fadeDuration = 0.5f;
 
             while (elapsedTime < fadeDuration)
             {
@@ -227,6 +228,7 @@ public class GameManager : MonoBehaviour
     {
         if(PlayerContainer.transform.Find("PlayerBall").gameObject != null)
         {
+            //StartCoroutine(CameraReposition(Camera.GetComponent<Camera>()));
             Camera.AddComponent<CameraFollow>();
             Camera.GetComponent<CameraFollow>().setTarget(PlayerContainer.transform.Find("PlayerBall").transform);
         }

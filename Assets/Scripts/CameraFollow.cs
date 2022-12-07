@@ -12,9 +12,8 @@ public class CameraFollow : MonoBehaviour
     void Update()
     {
         if (target == null) return;
-
-        Vector3 newPos = new Vector3(target.position.x, -0.5f, -10f);
-        transform.position = Vector3.SmoothDamp(transform.position, newPos, ref velocity,  FollowSpeed * Time.deltaTime);
+        Vector3 newPos = new Vector3(target.position.x + 2f, -0.5f, -10f);
+        transform.position = Vector3.SmoothDamp(transform.position, newPos, ref velocity,  FollowSpeed/100000 * Time.deltaTime);
     }
 
     public void setTarget(Transform target)
