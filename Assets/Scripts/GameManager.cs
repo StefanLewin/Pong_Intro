@@ -54,7 +54,7 @@ public class GameManager : MonoBehaviour
 
                 ExplodeLines();
 
-                RightWall.transform.position = new Vector3(90, 0, 0);
+                RightWall.transform.position = new Vector3(475, 0, 0);
                 
                 
                 
