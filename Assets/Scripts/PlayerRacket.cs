@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class PlayerRacket : Racket
 {
@@ -19,11 +20,11 @@ public class PlayerRacket : Racket
 
     private void PlayerOneControls()
     {
-        if (Input.GetKey(KeyCode.W))
+        if (Gamepad.current.leftStick.up.isPressed || Gamepad.current.dpad.up.isPressed)
         {
             _direction = Vector2.up;
         }
-        else if (Input.GetKey(KeyCode.S))
+        else if (Gamepad.current.leftStick.down.isPressed || Gamepad.current.dpad.down.isPressed)
         {
             _direction = Vector2.down;
         }
@@ -35,11 +36,11 @@ public class PlayerRacket : Racket
 
     private void PlayerTwoControls()
     {
-        if (Input.GetKey(KeyCode.UpArrow))
+        if (Keyboard.current.upArrowKey.isPressed)
         {
             _direction = Vector2.up;
         }
-        else if (Input.GetKey(KeyCode.DownArrow))
+        else if (Keyboard.current.downArrowKey.isPressed)
         {
             _direction = Vector2.down;
         }

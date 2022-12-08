@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class PlayerBall : MonoBehaviour
 {
@@ -18,11 +19,11 @@ public class PlayerBall : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetKey(KeyCode.LeftArrow))
+        if (Gamepad.current.leftStick.left.isPressed || Gamepad.current.dpad.left.isPressed)
         {
             _direction = Vector2.left;
         }
-        else if (Input.GetKey(KeyCode.RightArrow))
+        else if (Gamepad.current.leftStick.right.isPressed || Gamepad.current.dpad.right.isPressed)
         {
             _direction = Vector2.right;
         }

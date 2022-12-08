@@ -3,6 +3,7 @@ using System.Collections;
 using Unity.VisualScripting;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.UI;
 using static UnityEngine.GraphicsBuffer;
 
@@ -35,7 +36,7 @@ public class GameManager : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetKey(KeyCode.Z)) 
+        if (Gamepad.current.crossButton.isPressed) 
         {
             if (!isExploded)
             {                
@@ -56,22 +57,17 @@ public class GameManager : MonoBehaviour
                 ExplodeLines();
 
                 RightWall.transform.position = new Vector3(475, 0, 0);
-                
-                
-                
             }
             
             isExploded = true;
 
-
-
         } 
-        else if (Input.GetKey(KeyCode.Alpha1) && _playerCount == 0)
+        else if (Gamepad.current.rightShoulder.isPressed && _playerCount == 0)
         {
             InitHumanPlayer(true, true);
           
         } 
-        else if (Input.GetKey(KeyCode.Alpha2) && _playerCount == 1)
+        else if (Keyboard.current.enterKey.isPressed && _playerCount == 1)
         {
             InitHumanPlayer(false, false);
         }
@@ -104,9 +100,13 @@ public class GameManager : MonoBehaviour
 
             while (elapsedTime < fadeDuration)
             {
-                elapsedTime += Time.deltaTime;
-                sprite.color = Color.Lerp(initialColor, targetColor, elapsedTime / fadeDuration);
-                yield return null;
+                if(sprite != null)
+                {
+                    elapsedTime += Time.deltaTime;
+                    sprite.color = Color.Lerp(initialColor, targetColor, elapsedTime / fadeDuration);
+                    yield return null;
+                }
+
             }
         }
     }
